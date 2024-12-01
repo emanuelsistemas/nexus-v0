@@ -1,16 +1,17 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from ..database import get_db
-from ..database.models import User
 from fastapi import APIRouter
 
-router = APIRouter()
+from ..database import get_db
+from ..database.models import User
+
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 # Configurações de segurança
 SECRET_KEY = "your-secret-key"  # Deve ser substituído por uma chave segura
@@ -18,7 +19,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)

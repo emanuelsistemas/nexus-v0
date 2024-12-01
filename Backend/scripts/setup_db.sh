@@ -50,8 +50,12 @@ apply_migrations() {
         alembic init alembic
     fi
     
+    # Atualiza o arquivo env.py do Alembic para usar os modelos corretos
+    sed -i "s/target_metadata = None/from src.database.models import Base\ntarget_metadata = Base.metadata/" ../alembic/env.py
+    
     # Gera e aplica as migrações
     cd ..
+    export PYTHONPATH=$PYTHONPATH:$(pwd)
     alembic revision --autogenerate -m "Initial migration"
     alembic upgrade head
     
