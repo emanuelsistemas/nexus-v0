@@ -1,13 +1,23 @@
-import { Sidebar } from './components/Sidebar'
-import { Chat } from './components/Chat'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { PrivateRoute } from "./components/PrivateRoute";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
+export default function App() {
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <Sidebar />
-      <Chat />
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
-
-export default App
