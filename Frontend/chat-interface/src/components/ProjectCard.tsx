@@ -45,24 +45,26 @@ export default function ProjectCard({
     setIsLoading(true);
     setError("");
     try {
-      const response = await fetch(`/api/projects/${id}`, {
+      const response = await fetch(`/api/v1/projects/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updates),
+        credentials: "include",
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Erro ao atualizar projeto");
+        throw new Error(data.detail || "Erro ao atualizar projeto");
       }
 
-      const updatedProject = await response.json();
-      updateProject(id, updatedProject);
+      updateProject(id, data);
       setIsEditModalOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao atualizar projeto");
+      const errorMessage = err instanceof Error ? err.message : "Erro ao atualizar projeto";
+      setError(errorMessage);
       console.error("Erro ao atualizar projeto:", err);
     } finally {
       setIsLoading(false);
@@ -73,19 +75,21 @@ export default function ProjectCard({
     setIsLoading(true);
     setError("");
     try {
-      const response = await fetch(`/api/projects/${id}`, {
+      const response = await fetch(`/api/v1/projects/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Erro ao excluir projeto");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || "Erro ao excluir projeto");
       }
 
       deleteProject(id);
       setIsEditModalOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao excluir projeto");
+      const errorMessage = err instanceof Error ? err.message : "Erro ao excluir projeto";
+      setError(errorMessage);
       console.error("Erro ao excluir projeto:", err);
     } finally {
       setIsLoading(false);
