@@ -15,6 +15,8 @@ interface EditProjectModalProps {
   initialName: string;
   initialDescription: string;
   initialStatus: ProjectStatus;
+  isLoading?: boolean;
+  error?: string;
 }
 
 export default function EditProjectModal({
@@ -25,6 +27,8 @@ export default function EditProjectModal({
   initialName,
   initialDescription,
   initialStatus,
+  isLoading = false,
+  error = "",
 }: EditProjectModalProps) {
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
@@ -35,12 +39,12 @@ export default function EditProjectModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || isLoading) return;
     onSubmit({ name, description, status });
   };
 
   const handleDelete = () => {
-    if (!showDeleteConfirm) {
+    if (!showDeleteConfirm || isLoading) {
       setShowDeleteConfirm(true);
       return;
     }
@@ -48,7 +52,7 @@ export default function EditProjectModal({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={isLoading ? undefined : onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-title">Editar Projeto</h2>
         <form onSubmit={handleSubmit} className="modal-form">
@@ -62,6 +66,7 @@ export default function EditProjectModal({
               className="form-input"
               placeholder="Digite o nome do projeto"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -74,6 +79,7 @@ export default function EditProjectModal({
               className="form-textarea"
               placeholder="Digite a descrição do projeto"
               rows={4}
+              disabled={isLoading}
             />
           </div>
 
@@ -85,6 +91,7 @@ export default function EditProjectModal({
               onChange={(e) => setStatus(e.target.value as ProjectStatus)}
               className="form-select"
               required
+              disabled={isLoading}
             >
               <option value="active">Ativo</option>
               <option value="archived">Arquivado</option>
@@ -92,22 +99,36 @@ export default function EditProjectModal({
             </select>
           </div>
 
+          {error && <div className="error-message">{error}</div>}
+
           <div className="modal-actions">
             <button
               type="button"
               onClick={handleDelete}
-              className={`delete-button ${showDeleteConfirm ? "confirm" : ""}`}
+              className={`delete-button ${showDeleteConfirm ? "confirm" : ""} ${isLoading ? "loading" : ""}`}
+              disabled={isLoading}
             >
-              {showDeleteConfirm
+              {isLoading
+                ? "Processando..."
+                : showDeleteConfirm
                 ? "⚠️ Confirmar Exclusão (Perderá TODAS as conversas)"
                 : "Excluir Projeto"}
             </button>
             <div className="right-actions">
-              <button type="button" onClick={onClose} className="cancel-button">
+              <button
+                type="button"
+                onClick={onClose}
+                className="cancel-button"
+                disabled={isLoading}
+              >
                 Cancelar
               </button>
-              <button type="submit" className="submit-button">
-                Salvar
+              <button
+                type="submit"
+                className={`submit-button ${isLoading ? "loading" : ""}`}
+                disabled={isLoading}
+              >
+                {isLoading ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </div>
@@ -122,7 +143,7 @@ export default function EditProjectModal({
                 <li>Todas as conversas do projeto</li>
                 <li>Todo o histórico de interações</li>
                 <li>Todas as configurações personalizadas</li>
-                <li>Todos os dados associados</li>
+                <li>Todos os dados associados no banco de dados</li>
               </ul>
               <p>
                 Clique novamente em "Confirmar Exclusão" se realmente deseja

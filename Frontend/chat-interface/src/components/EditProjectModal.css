@@ -70,6 +70,13 @@
   box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
 }
 
+.form-input:disabled,
+.form-textarea:disabled,
+.form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .form-textarea {
   resize: vertical;
   min-height: 100px;
@@ -97,7 +104,7 @@
   color: #ff4444;
 }
 
-.delete-button:hover {
+.delete-button:hover:not(:disabled) {
   background: rgba(255, 0, 0, 0.2);
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
@@ -106,6 +113,12 @@
   background: rgba(255, 0, 0, 0.2);
   border-color: #ff4444;
   animation: pulse 1.5s infinite;
+}
+
+.delete-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  animation: none;
 }
 
 .cancel-button {
@@ -119,8 +132,13 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.cancel-button:hover {
+.cancel-button:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.15);
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .submit-button {
@@ -134,9 +152,35 @@
   color: #00ff9d;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background: rgba(0, 255, 157, 0.2);
   box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-button.loading,
+.delete-button.loading {
+  position: relative;
+  padding-right: 2.5rem;
+}
+
+.submit-button.loading::after,
+.delete-button.loading::after {
+  content: "";
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .delete-warning {
@@ -160,6 +204,17 @@
 
 .delete-warning li {
   margin: 0.5rem 0;
+}
+
+.error-message {
+  padding: 0.75rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 4px;
+  color: #ff4444;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  animation: shake 0.4s ease;
 }
 
 @keyframes pulse {
@@ -188,6 +243,17 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes spin {
+  from { transform: translateY(-50%) rotate(0deg); }
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 /* Responsive adjustments */

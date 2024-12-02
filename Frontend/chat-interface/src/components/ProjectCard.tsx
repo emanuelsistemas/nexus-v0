@@ -23,6 +23,8 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const { setActiveProject, updateProject, deleteProject } = useProjectStore();
 
   const handleCardClick = () => {
@@ -35,18 +37,59 @@ export default function ProjectCard({
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateProject = (updates: {
+  const handleUpdateProject = async (updates: {
     name: string;
     description: string;
     status: ProjectStatus;
   }) => {
-    updateProject(id, updates);
-    setIsEditModalOpen(false);
+    setIsLoading(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Erro ao atualizar projeto");
+      }
+
+      const updatedProject = await response.json();
+      updateProject(id, updatedProject);
+      setIsEditModalOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao atualizar projeto");
+      console.error("Erro ao atualizar projeto:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteProject = () => {
-    deleteProject(id);
-    setIsEditModalOpen(false);
+  const handleDeleteProject = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/projects/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Erro ao excluir projeto");
+      }
+
+      deleteProject(id);
+      setIsEditModalOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao excluir projeto");
+      console.error("Erro ao excluir projeto:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -91,8 +134,12 @@ export default function ProjectCard({
       <div className="project-card" onClick={handleCardClick}>
         <div className="card-header">
           <h3 className="project-name">{name}</h3>
-          <button onClick={handleEditClick} className="edit-button">
-            Editar
+          <button
+            onClick={handleEditClick}
+            className="edit-button"
+            disabled={isLoading}
+          >
+            {isLoading ? "Processando..." : "Editar"}
           </button>
         </div>
         <p className="project-description">{description}</p>
@@ -105,6 +152,7 @@ export default function ProjectCard({
             <span className="date-label">Atualizado: {formatDate(updatedAt)}</span>
           </div>
         </div>
+        {error && <div className="error-message">{error}</div>}
       </div>
 
       <EditProjectModal
@@ -115,6 +163,8 @@ export default function ProjectCard({
         initialName={name}
         initialDescription={description}
         initialStatus={status}
+        isLoading={isLoading}
+        error={error}
       />
     </>
   );
