@@ -1,0 +1,72 @@
+.project-card {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(0, 255, 157, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: #00ff9d;
+  box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+  transform: translateY(-2px);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.project-card-title {
+  color: #00ff9d;
+  font-size: 1.25rem;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+  margin: 0;
+}
+
+.project-card-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: rgba(0, 255, 157, 0.1);
+  color: #00ff9d;
+  border: 1px solid rgba(0, 255, 157, 0.3);
+}
+
+.status-pending {
+  background: rgba(255, 170, 0, 0.1);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.project-card-description {
+  color: rgba(0, 255, 157, 0.8);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.project-card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.project-card-action {
+  color: #00ff9d;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+.project-card:hover .project-card-action {
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}

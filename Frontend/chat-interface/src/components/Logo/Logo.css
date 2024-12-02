@@ -1,0 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=MuseoModerno:wght@700&display=swap");
+
+.logo {
+  font-family: "MuseoModerno", sans-serif;
+  background: linear-gradient(90deg, #00ff9d 0%, #00f6ad 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.7),
+               0 0 20px rgba(0, 255, 157, 0.5),
+               0 0 30px rgba(0, 255, 157, 0.3);
+  position: relative;
+  letter-spacing: 2px;
+}
+
+.logo::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 157, 0.3), transparent);
+  transform: translateY(-50%);
+  z-index: -1;
+  box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+}
+
+.logo-glitch {
+  position: relative;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+  0% {
+    transform: skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+  21% {
+    transform: skew(-2deg);
+    filter: hue-rotate(-5deg);
+  }
+  22% {
+    transform: skew(2deg);
+    filter: hue-rotate(5deg);
+  }
+  23% {
+    transform: skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: skew(0deg);
+    filter: hue-rotate(0deg);
+  }
+}
