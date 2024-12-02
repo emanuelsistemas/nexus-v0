@@ -1,42 +1,121 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "@/utils";
+import EditProjectModal, { ProjectStatus } from "./EditProjectModal";
 import "./ProjectCard.css";
 
 interface ProjectCardProps {
   id: string;
   name: string;
   description: string;
-  status: string;
+  status: ProjectStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default function ProjectCard({ id, name, description, status }: ProjectCardProps) {
+export default function ProjectCard({
+  id,
+  name,
+  description,
+  status,
+  createdAt,
+  updatedAt,
+}: ProjectCardProps) {
   const navigate = useNavigate();
-  const setActiveProject = useProjectStore((state) => state.setActiveProject);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { setActiveProject, updateProject, deleteProject } = useProjectStore();
 
-  const handleClick = () => {
-    setActiveProject(id);
-    navigate(`/chat?project=${id}`);
+  const handleCardClick = () => {
+    setActiveProject({ id, name, description, status, createdAt, updatedAt });
+    navigate("/chat");
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateProject = (updates: {
+    name: string;
+    description: string;
+    status: ProjectStatus;
+  }) => {
+    updateProject(id, updates);
+    setIsEditModalOpen(false);
+  };
+
+  const handleDeleteProject = () => {
+    deleteProject(id);
+    setIsEditModalOpen(false);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getStatusColor = (status: ProjectStatus) => {
+    switch (status) {
+      case "active":
+        return "status-active";
+      case "archived":
+        return "status-archived";
+      case "completed":
+        return "status-completed";
+      default:
+        return "";
+    }
+  };
+
+  const getStatusText = (status: ProjectStatus) => {
+    switch (status) {
+      case "active":
+        return "Ativo";
+      case "archived":
+        return "Arquivado";
+      case "completed":
+        return "Concluído";
+      default:
+        return status;
+    }
   };
 
   return (
-    <div
-      className="project-card"
-      onClick={handleClick}
-      role="button"
-      tabIndex={0}
-    >
-      <div className="project-card-header">
-        <h3 className="project-card-title">{name}</h3>
-        <span className={`project-card-status status-${status.toLowerCase()}`}>
-          {status}
-        </span>
+    <>
+      <div className="project-card" onClick={handleCardClick}>
+        <div className="card-header">
+          <h3 className="project-name">{name}</h3>
+          <button onClick={handleEditClick} className="edit-button">
+            Editar
+          </button>
+        </div>
+        <p className="project-description">{description}</p>
+        <div className="card-footer">
+          <span className={`project-status ${getStatusColor(status)}`}>
+            {getStatusText(status)}
+          </span>
+          <div className="project-dates">
+            <span className="date-label">Criado: {formatDate(createdAt)}</span>
+            <span className="date-label">Atualizado: {formatDate(updatedAt)}</span>
+          </div>
+        </div>
       </div>
-      <p className="project-card-description">{description}</p>
-      <div className="project-card-footer">
-        <span className="project-card-action">
-          Abrir Chat →
-        </span>
-      </div>
-    </div>
+
+      <EditProjectModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleUpdateProject}
+        onDelete={handleDeleteProject}
+        initialName={name}
+        initialDescription={description}
+        initialStatus={status}
+      />
+    </>
   );
 }
